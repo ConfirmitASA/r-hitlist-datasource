@@ -8,6 +8,7 @@ import HitlistSetup from "./hitlist-setup";
 class HitlistDatasource extends HitlistSetup{
   /**
    * This class allows to establish a connection with the HitList database and use utility methods to query and filter data provided there's a hitlist on the page
+   * @extends HitlistSetup
    * */
   constructor(options={}){
     super();
