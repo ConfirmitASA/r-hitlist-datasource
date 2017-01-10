@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>hitlist-datasource.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HitlistDatasource.html">HitlistDatasource</a><ul class='methods'><li data-type='method'><a href="HitlistDatasource.html#.serializeParams">serializeParams</a></li><li data-type='method'><a href="HitlistDatasource.html#_skipPage">_skipPage</a></li><li data-type='method'><a href="HitlistDatasource.html#initialDataLoad">initialDataLoad</a></li><li data-type='method'><a href="HitlistDatasource.html#nextPage">nextPage</a></li><li data-type='method'><a href="HitlistDatasource.html#parseResponse">parseResponse</a></li><li data-type='method'><a href="HitlistDatasource.html#previousPage">previousPage</a></li><li data-type='method'><a href="HitlistDatasource.html#requestResponse">requestResponse</a></li></ul></li><li><a href="HitlistSetup.html">HitlistSetup</a><ul class='methods'><li data-type='method'><a href="HitlistSetup.html#.getOriginalConfig">getOriginalConfig</a></li><li data-type='method'><a href="HitlistSetup.html#i18n">i18n</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">hitlist-datasource.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created by IvanP on 10.01.2017.
+ */
+import ReportalBase from "r-reportal-base";
+import HitlistSetup from "./hitlist-setup";
+
+
+class HitlistDatasource extends HitlistSetup{
+  /**
+   * This class allows to establish a connection with the HitList database and use utility methods to query and filter data provided there's a hitlist on the page
+   * */
+  constructor(options={}){
+    super();
+    this._searchValues=[];
+    /** @property {String} modifier - extra params added as a string from filters */
+    this._modifier = '';
+  }
+
+  /**
+   * performs initial data load
+   * @returns {Promise} Returns a promise resolved to an array of data
+   * */
+  initialDataLoad(){
+    this.data = null;
+    return this.requestResponse({initialLoad:true})
+  }
+  /**
+   * loads next page
+   * @returns {Promise} Returns a promise resolved to an array of data
+   * */
+  nextPage(){
+    this._skipPage(true);
+    this.requestResponse({isPaging: true},modifier);
+  }
+  /**
+   * loads previous page
+   * @returns {Promise} Returns a promise resolved to an array of data
+   * */
+  previousPage(){
+    this._skipPage(false);
+    this.requestResponse({isPaging: true},modifier);
+  }
+
+  /**
+   * queries HitList API
+   * @param {Object} options
+   * */
+  requestResponse(options){
+    let query= ReportalBase.locationDeserialize().query;
+    if(query &amp;&amp; query.reportid &amp;&amp; this.hitlistID){
+      /*set common params*/
+      let params = {
+        PageId: this.pageID,
+        pageStateId: this.pageStateID,
+        Preview: query.preview
+      };
+
+      /*if options are passed, add options*/
+      if(options &amp;&amp; typeof options === 'object'){
+        for (let attrname in options) {
+          params[attrname] = typeof options[attrname]==='boolean'?(options[attrname]?'1':'0'):options[attrname];
+        }
+      }
+
+      if(!params.search &amp;&amp; this._searchValues.length>0){
+        params.search = JSON.stringify(this._searchValues);
+      }
+
+      let sortingPagingValues = this.sortingPagingValues;
+
+      if (sortingPagingValues.pagingValues &amp;&amp; !isNaN(sortingPagingValues.pagingValues.pageNumber)) {
+        if (options &amp;&amp; options.initialLoad === true) {
+          sortingPagingValues.pagingValues = null;
+        } else {
+          sortingPagingValues.pagingValues.pageNumber += sortingPagingValues.pagingValues.pagingForward ? 1 : -1;
+        }
+      }
+
+      params.sortingPagingValues=JSON.stringify(sortingPagingValues);
+
+      return ReportalBase.promiseRequest(`${this.serviceURL}&amp;${this.constructor.serializeParams(params)}${this.modifier!=''?'&amp;'+this.modifier:''}`).then(response=>this.parseResponse(response))
+    }
+  }
+
+  /**
+   * Parses HitList API response
+   * */
+  parseResponse(response){
+    response = JSON.parse(response);
+    this.sortingPagingValues = response.sortingPagingValues;
+    this.data = response.data;
+    this.pageInfo = response.pageInfo;
+    return this.data;
+  }
+
+  /**
+   * @param {Boolean} pagingForward if `true` goes forward, if `null` goes backward
+   * @param {!Function} callback
+   * */
+  _skipPage(pagingForward){
+    let spv = this.sortingPagingValues.pagingValues;
+    spv.pagingForward = pagingForward; /*if forward is needed then pass true, else null - backward*/
+    spv.startId = pagingForward ? spv.lastStartId : spv.firstStartId;
+    spv.startValue = pagingForward ? spv.lastStartValue : spv.firstStartValue;
+  }
+
+  /**
+   * serialize params into a query string
+   * @param {Object} params - an object with parameters
+   * */
+  static serializeParams(params){
+    let query = [];
+    for(let key in params){
+      query.push([key,params[key]].join('='));
+    }
+    return query.join('&amp;')
+  }
+
+}
+
+export default HitlistDatasource;
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Jan 10 2017 20:07:16 GMT+0300 (Russia TZ 2 Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
