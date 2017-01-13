@@ -14,7 +14,7 @@ class HitlistDatasource extends HitlistSetup{
     super();
     this._searchValues=[];
     /** @property {String} modifier - extra params added as a string from filters */
-    this._modifier = '';
+    this.modifier = '';
   }
 
   /**
