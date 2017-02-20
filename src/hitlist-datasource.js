@@ -4,7 +4,6 @@
 import ReportalBase from "r-reportal-base";
 import HitlistSetup from "./hitlist-setup";
 
-
 class HitlistDatasource extends HitlistSetup{
   /**
    * This class allows to establish a connection with the HitList database and use utility methods to query and filter data provided there's a hitlist on the page
@@ -69,7 +68,7 @@ class HitlistDatasource extends HitlistSetup{
 
       let sortingPagingValues = this.sortingPagingValues;
 
-      if (sortingPagingValues.pagingValues && !isNaN(sortingPagingValues.pagingValues.pageNumber)) {
+      if (sortingPagingValues.pagingValues!=null && !isNaN(sortingPagingValues.pagingValues.pageNumber)) {
         if (options && options.initialLoad === true) {
           sortingPagingValues.pagingValues = null;
         } else {

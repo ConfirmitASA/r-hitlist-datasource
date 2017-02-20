@@ -77,10 +77,9 @@ class HitlistSetup{
     return this._config.sortingPagingValues!=null?this._config.sortingPagingValues:{}
   }
   set sortingPagingValues(val){
-    let spv = this._config.sortingPagingValues;
     val.pagingValues.firstStartValue = this.constructor._fixJsonDate(val.pagingValues.firstStartValue);
     val.pagingValues.lastStartValue = this.constructor._fixJsonDate(val.pagingValues.lastStartValue);
-    spv = val;
+    this._config.sortingPagingValues = val;
   }
 
   static _fixJsonDate(jsonDate) {
