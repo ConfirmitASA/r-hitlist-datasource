@@ -4,7 +4,7 @@
 
 class HitlistSetup{
   constructor(){
-    this._config = this.constructor.getOriginalConfig();
+    this._config = HitlistSetup.getOriginalConfig();
     this._elementType = window.HitListElementType;
     this._op = window.SearchableListOperator;
   }
@@ -77,8 +77,8 @@ class HitlistSetup{
     return this._config.sortingPagingValues!=null?this._config.sortingPagingValues:{}
   }
   set sortingPagingValues(val){
-    val.pagingValues.firstStartValue = this.constructor._fixJsonDate(val.pagingValues.firstStartValue);
-    val.pagingValues.lastStartValue = this.constructor._fixJsonDate(val.pagingValues.lastStartValue);
+    val.pagingValues.firstStartValue = HitlistSetup._fixJsonDate(val.pagingValues.firstStartValue);
+    val.pagingValues.lastStartValue = HitlistSetup._fixJsonDate(val.pagingValues.lastStartValue);
     this._config.sortingPagingValues = val;
   }
 

@@ -78,7 +78,7 @@ class HitlistDatasource extends HitlistSetup{
 
       params.sortingPagingValues=JSON.stringify(sortingPagingValues);
 
-      return ReportalBase.promiseRequest(`${this.serviceURL}&${this.constructor.serializeParams(params)}${this.modifier!=''?'&'+this.modifier:''}`).then(response=>this.parseResponse(response))
+      return ReportalBase.promiseRequest(`${this.serviceURL}&${HitlistDatasource.serializeParams(params)}${this.modifier!=''?'&'+this.modifier:''}`).then(response=>this.parseResponse(response))
     }
   }
 
@@ -98,6 +98,7 @@ class HitlistDatasource extends HitlistSetup{
    * @param {!Function} callback
    * */
   _skipPage(pagingForward){
+    this.sortingPagingValues===null && (this.sortingPagingValues = {pagingValues:{}});
     let spv = this.sortingPagingValues.pagingValues;
     spv.pagingForward = pagingForward; /*if forward is needed then pass true, else null - backward*/
     spv.startId = pagingForward ? spv.lastStartId : spv.firstStartId;
