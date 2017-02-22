@@ -4,6 +4,11 @@
 
 class HitlistSetup{
   constructor(){
+    //fix for window.location origin, thanx IE
+    if (!window.location.origin) {
+      window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    }
+
     this._config = HitlistSetup.getOriginalConfig();
     this._elementType = window.HitListElementType;
     this._op = window.SearchableListOperator;
@@ -77,9 +82,10 @@ class HitlistSetup{
     return this._config.sortingPagingValues!=null?this._config.sortingPagingValues:{}
   }
   set sortingPagingValues(val){
+    let spv = this._config.sortingPagingValues;
     val.pagingValues.firstStartValue = HitlistSetup._fixJsonDate(val.pagingValues.firstStartValue);
     val.pagingValues.lastStartValue = HitlistSetup._fixJsonDate(val.pagingValues.lastStartValue);
-    this._config.sortingPagingValues = val;
+    spv = val;
   }
 
   static _fixJsonDate(jsonDate) {
@@ -127,12 +133,12 @@ class HitlistSetup{
     let scripts = document.querySelectorAll('script');
     if(scripts){
       let i=scripts.length,
-        cfg = /(Y\.Reportal\.HitList,)\s(.*?)\);/gi;
+          cfg = /(Y\.Reportal\.HitList,)\s(.*?)\);/gi;
       while(i--){
         let script = scripts[i].text;
         if(script.indexOf('Y.Reportal.HitList,')>-1){
           let exec = cfg.exec(script);
-          return exec!=null && exec[2]? JSON.parse(exec[2]): null;
+          return (exec!=null && exec[2])? JSON.parse(exec[2]): null;
         }
       }
     } else {

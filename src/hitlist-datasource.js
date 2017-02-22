@@ -30,7 +30,7 @@ class HitlistDatasource extends HitlistSetup{
    * */
   nextPage(){
     this._skipPage(true);
-    this.requestResponse({isPaging: true},modifier);
+    this.requestResponse({isPaging: true},this.modifier);
   }
   /**
    * loads previous page
@@ -38,7 +38,7 @@ class HitlistDatasource extends HitlistSetup{
    * */
   previousPage(){
     this._skipPage(false);
-    this.requestResponse({isPaging: true},modifier);
+    this.requestResponse({isPaging: true},this.modifier);
   }
 
   /**
@@ -98,11 +98,15 @@ class HitlistDatasource extends HitlistSetup{
    * @param {!Function} callback
    * */
   _skipPage(pagingForward){
-    this.sortingPagingValues===null && (this.sortingPagingValues = {pagingValues:{}});
-    let spv = this.sortingPagingValues.pagingValues;
-    spv.pagingForward = pagingForward; /*if forward is needed then pass true, else null - backward*/
-    spv.startId = pagingForward ? spv.lastStartId : spv.firstStartId;
-    spv.startValue = pagingForward ? spv.lastStartValue : spv.firstStartValue;
+    let _spv = {...this.sortingPagingValues};
+    let pv = {..._spv.pagingValues} || {};
+    pv.pagingForward = pagingForward; /*if forward is needed then pass true, else null - backward*/
+    pv.startId = pagingForward ? pv.lastStartId : pv.firstStartId;
+    pv.startValue = pagingForward ? pv.lastStartValue : pv.firstStartValue;
+    this.sortingPagingValues = {
+      ...this.sortingPagingValues,
+      pagingValues: pv
+    };
   }
 
   /**
