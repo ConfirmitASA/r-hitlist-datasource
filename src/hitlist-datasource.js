@@ -30,7 +30,7 @@ class HitlistDatasource extends HitlistSetup{
    * */
   nextPage(){
     this._skipPage(true);
-    this.requestResponse({isPaging: true},this.modifier);
+    return this.requestResponse({isPaging: true},this.modifier);
   }
   /**
    * loads previous page
@@ -38,7 +38,7 @@ class HitlistDatasource extends HitlistSetup{
    * */
   previousPage(){
     this._skipPage(false);
-    this.requestResponse({isPaging: true},this.modifier);
+    return this.requestResponse({isPaging: true},this.modifier);
   }
 
   /**
