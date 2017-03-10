@@ -78,7 +78,8 @@ class HitlistDatasource extends HitlistSetup{
 
       params.sortingPagingValues=JSON.stringify(sortingPagingValues);
 
-      return ReportalBase.promiseRequest(`${this.serviceURL}&${HitlistDatasource.serializeParams(params)}${this.modifier!=''?'&'+this.modifier:''}`).then(response=>this.parseResponse(response))
+      return ReportalBase.promiseRequest(`${this.serviceURL}&${HitlistDatasource.serializeParams(params)}${this.modifier!=''?'&'+this.modifier:''}`)
+        .then(response=>this.parseResponse(response))
     }
   }
 
@@ -87,6 +88,7 @@ class HitlistDatasource extends HitlistSetup{
    * */
   parseResponse(response){
     response = JSON.parse(response);
+
     this.sortingPagingValues = response.sortingPagingValues;
     this.data = response.data;
     this.pageInfo = response.pageInfo;

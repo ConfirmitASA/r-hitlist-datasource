@@ -58,7 +58,13 @@ class HitlistSetup{
   get data(){return this._config.hitlistData}
 
   set data(data){
-    this._config.hitlistData = data!=null?this._config.hitlistData != null ? this._config.hitlistData.concat(data): data : null;
+    this._config.hitlistData = data;
+  }
+  get disableNextButton(){
+    return this.sortingPagingValues.disableNextButton || false
+  }
+  get disablePrevButton(){
+    return this.sortingPagingValues.disablePrevButton || false
   }
 
   /**
@@ -82,10 +88,7 @@ class HitlistSetup{
     return this._config.sortingPagingValues!=null?this._config.sortingPagingValues:{}
   }
   set sortingPagingValues(val){
-    let spv = this._config.sortingPagingValues;
-    val.pagingValues.firstStartValue = HitlistSetup._fixJsonDate(val.pagingValues.firstStartValue);
-    val.pagingValues.lastStartValue = HitlistSetup._fixJsonDate(val.pagingValues.lastStartValue);
-    spv = val;
+    this._config.sortingPagingValues = val;
   }
 
   static _fixJsonDate(jsonDate) {
